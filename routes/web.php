@@ -30,6 +30,8 @@ Route::get('/', [FrontendController::class, "index"])->name("index.front");
 
 Route::get('/about-us', [FrontendController::class, "about"])->name("about.front");
 
+//Car Biding
+
 Route::get('/listing', [FrontendController::class, "listing"])->name("listing.front");
 
 Route::get('/listing/car/{slug}/', [FrontendController::class, "listing_detail"])->name("listing.detail.front")->where(['id' => '[0-9]+']);
@@ -37,6 +39,18 @@ Route::get('/listing/car/{slug}/', [FrontendController::class, "listing_detail"]
 Route::post('/listing/bid/{slug}/', [FrontendController::class, "post_bid"])->name("listing.detail.bid.front")->middleware(['initial.payment', 'user.active']);
 
 Route::post('/listing/comment', [FrontendController::class, "post_comment"])->name("listing.detail.comment.front");
+
+//Shop
+Route::get('/shop', [FrontendController::class, "shop"])->name("shop.front");
+
+Route::get('/shop/product/{slug}/', [FrontendController::class, "product"])->name("shop.product.front")->where(['id' => '[0-9]+']);
+
+Route::get('/product/add-to-cart', [FrontendController::class, "add_to_cart"])->name("add_to_cart.front");
+
+Route::get('/product/remove-from-cart', [FrontendController::class, "remove_from_cart"])->name("remove_from_cart.front");
+
+Route::get('/cart', [FrontendController::class, "cart"])->name("cart.front");
+
 
 Route::match(["GET", "POST"], '/register', [FrontendController::class, "register"])->name("register.front");
 
@@ -68,9 +82,17 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
         Route::get('/update-status', [AdminController::class, "active_user"])->name('admin.activeuser');
 
         Route::prefix("/product")->group(function () {
-                  // Category
+
+            Route::get('/all', [ProductController::class, "index"])->name('admin.product.index');
+
             Route::get('/add', [ProductController::class, "create"])->name('admin.product.create');
-   });
+            Route::post('/add', [ProductController::class, "store"])->name('admin.product.store');
+
+            Route::get('/edit', [ProductController::class, "edit"])->name('admin.product.edit')->where('id', '[0-9]+');
+            Route::post('/edit', [ProductController::class, "update"])->name('admin.product.update')->where('id', '[0-9]+');
+
+            Route::get('/delete', [ProductController::class, "destroy"])->name('admin.product.destroy')->where('id', '[0-9]+');
+        });
 
         Route::match(["GET", "POST"], '/user-registration-amount', [AdminController::class, "user_registration_amount"])->name('admin.userregistrationamount');
         // Car Controller Routes

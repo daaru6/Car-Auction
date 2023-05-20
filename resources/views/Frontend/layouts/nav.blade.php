@@ -27,7 +27,8 @@
                         @else
                             <li><a href="{{ route('register.front') }}">Register</a></li>
                             <li><a href="{{ route('login.web') }}">login</a></li>
-                        @endif
+                            @endif
+                            <li><i class="fa fa-shopping-cart " aria-hidden="true"></i><span class="header-mini-cart">{{ isset($data['cart']['items']) ? count($data['cart']['items']) : 0 }}</span></li>
 
 
 
@@ -51,7 +52,9 @@
                 <ul>
                     <li><a href="{{ route('index.front') }}">Home</a></li>
                     <li><a href="{{ route('about.front') }}">About Us</a></li>
-                    <li><a href="{{ route('listing.front') }}">Listing</a></li>
+                    <li><a href="{{ route('listing.front') }}">Car Listing</a></li>
+                    <li><a href="{{ route('shop.front') }}">Shop</a></li>
+                    <li><a href="{{ route('cart.front') }}">Cart</a></li>
                     {{-- <li><a href="{{route('listing.front')}}">Listing</a></li>
                     <li><a href="{{route('contact.front')}}">Contact</a></li> --}}
 

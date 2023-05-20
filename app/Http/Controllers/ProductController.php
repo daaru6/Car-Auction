@@ -5,38 +5,26 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Lib\Generic;
 use App\Models\Product;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
     {
+        $title = "All Products";
         $products = Product::all();
-        $test = 'test';
-        
-        return view('products.index', compact('title','products'));
+
+        return view('admin.product.list', compact('title', 'products'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function create()
     {
-        return view('products.create');
+        $title = "Add Product";
+        return view('admin.product.create', compact('title'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -48,47 +36,32 @@ class ProductController extends Controller
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            Generic::upload_image($image);
+            $image = Generic::upload_image($image);
             $validated['image'] = $image;
         }
+        $validated['slug'] = Str::slug($validated['name'], '-');
 
         $product = Product::create($validated);
 
-        return redirect()->route('products.index')
-            ->with('success', 'Product created successfully.');
+        return redirect()->route('admin.product.index')->with('success', 'Product created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Product $product)
+
+    public function edit(Request $request)
     {
-        return view('products.show', compact('product'));
+        $title = "Edit Product";
+
+        $product = Product::findOrFail($request->id);
+
+        return view('admin.product.edit', compact('title', 'product'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Product $product)
-    {
-        return view('products.edit', compact('product'));
-    }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Product $product)
+    public function update(Request $request)
     {
+
+        $product = Product::findOrFail($request->id);
+
         $validated = $request->validate([
             'name' => 'required',
             'description' => 'nullable',
@@ -98,29 +71,25 @@ class ProductController extends Controller
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $image_name = time().'.'.$image->getClientOriginalExtension();
-            $destinationPath = public_path('/images');
-            $image->move($destinationPath, $image_name);
-            $validated['image'] = $image_name;
+            $image = Generic::upload_image($image);
+            $validated['image'] = $image;
         }
-
+        $validated['slug'] = Str::slug($validated['name'], '-');
+        
         $product->update($validated);
 
-        return redirect()->route('products.index')
+        return redirect()->route('admin.product.index')
             ->with('success', 'Product updated successfully');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Product $product)
+    public function destroy(Request $request)
     {
+
+        $product = Product::findOrFail($request->id);
+
         $product->delete();
 
-        return redirect()->route('products.index')
+        return redirect()->route('admin.product.index')
             ->with('success', 'Product deleted successfully');
     }
 }

@@ -13,6 +13,7 @@ use App\Models\CarCategory;
 use App\Models\CarBrands;
 use App\Models\CarBids;
 use App\Models\CarComment;
+use App\Models\Product;
 use App\Models\CarGallery;
 use Carbon\Carbon;
 
@@ -28,8 +29,167 @@ class FrontendController extends Controller
     public function about()
     {
         $data['page_title'] = "Auction - About Us";
-        return view("Frontend.pages.home")->with('data', $data);
+
+
+        return view("Frontend.pages.shop")->with('data', $data);
     }
+
+    public function shop(Request $request)
+    {
+        $data['page_title'] = "Auction - Shop";
+
+        $query = Product::when($request->has('search'), function ($query) use ($request) {
+            $query->where('name', 'LIKE', '%' . $request->input('search') . '%');
+        });
+
+        $data['products'] = $query->paginate(6);
+
+        return view("Frontend.pages.shop")->with('data', $data);
+    }
+
+    public function cart(Request $request)
+    {
+
+        $data['page_title'] = "Auction - Cart";
+
+        $data['cart'] = session()->get('cart');
+
+        return view("Frontend.pages.cart")->with("data" , $data);
+    }
+
+
+    public function add_to_cart(Request $request)
+    {
+        $rules = [
+            'id' => 'required',
+            'quantity' => 'required',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            $response = [
+                "status" => 0,
+                "message" => $validator->errors()->first(),
+            ];
+
+            return response()->json($response, 200);
+        }
+
+        $product = Product::find($request->id);
+
+        if (!$product) {
+            $response = [
+                "status" => 0,
+                "message" => 'Product not found!',
+            ];
+
+            return response()->json($response, 200);
+        }
+
+        $quantity = $request->quantity === 0 ? 1 : $request->quantity;
+
+        $cart = session()->get('cart', [
+            'items' => [],
+            'total_price' => 0,
+        ]);
+
+        $items = collect($cart['items']);
+
+        $items->transform(function ($item) use ($product, $quantity, $request) {
+
+            if ($item['id'] === $product->id) {
+
+                $item['quantity'] = $quantity;
+
+                $item['price'] = $product->price;
+
+                $item['total_price'] = $item['quantity'] * $item['price'];
+            }
+
+            return $item;
+        });
+
+        $item = [
+            'id' => $product->id,
+            'name' => $product->name,
+            'price' => $product->price,
+            'image' => $product->image,
+            'quantity' => $quantity,
+        ];
+
+        $existingItem = $items->firstWhere('id', $product->id);
+
+        if (!$existingItem) {
+
+            $item['total_price'] = $item['quantity'] * $item['price'];
+
+            $items->push($item);
+        }
+        $cart['total_price'] = $items->sum('total_price');
+
+        $cart['items'] = $items->toArray();
+
+        session()->put('cart', $cart);
+
+        $response = [
+            "status" => 1,
+            "message" => 'Product added to cart!',
+            "cart" => $cart,
+        ];
+
+        return response()->json($response, 200);
+    }
+
+    public function remove_from_cart(Request $request)
+    {
+        $rules = [
+            'id' => 'required',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            $response = [
+                "status" => 0,
+                "message" => $validator->errors()->first(),
+            ];
+
+            return response()->json($response, 200);
+        }
+
+        $product_id = $request->input('id');
+
+        $cart = session()->get('cart');
+
+        if (isset($cart['items'])) {
+            foreach ($cart['items'] as $index => $item) {
+                if ($item['id'] == $product_id) {
+                    unset($cart['items'][$index]);
+                    $cart['total_price'] -= $item['total_price'];
+                    break;
+                }
+            }
+
+            $cart['items'] = array_values($cart['items']); // Re-index the remaining items
+
+            session()->put('cart', $cart);
+
+            $response = [
+                'status' => 1,
+                'message' => 'Product removed from cart',
+                'cart' => $cart
+            ];
+        } else {
+            $response = [
+                'status' => 0,
+                'message' => 'No products found in cart'
+            ];
+        }
+
+        return response()->json($response);
+    }
+
 
     public function listing(Request $request)
     {
