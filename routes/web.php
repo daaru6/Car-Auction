@@ -51,13 +51,14 @@ Route::get('/product/remove-from-cart', [FrontendController::class, "remove_from
 
 Route::get('/cart', [FrontendController::class, "cart"])->name("cart.front");
 
+Route::match(['GET', 'POST'], '/checkout', [FrontendController::class, "checkout"])->name("checkout.front");
+
 
 Route::match(["GET", "POST"], '/register', [FrontendController::class, "register"])->name("register.front");
 
 Route::get('/login', function () {
 
     return view("login");
-    
 })->name("login.web");
 
 Route::post('/login', [AuthController::class, "login"])->name('loginpost');

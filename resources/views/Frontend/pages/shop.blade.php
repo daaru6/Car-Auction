@@ -68,8 +68,8 @@
                                         @forelse ($data['products'] as $product)
                                             <div class="featured-item col-md-4">
 
-                                                <img class="img-fluid img-size" src="{{ asset('upload/' . $product->image) }}"
-                                                    alt="">
+                                                <img class="img-fluid img-size"
+                                                    src="{{ asset('upload/' . $product->image) }}" alt="">
 
                                                 <div class="down-content">
 
@@ -77,8 +77,8 @@
                                                         href="{{ route('shop.product.front', ['slug' => $product->slug, 'id' => $product->id]) }}">
                                                         <h2>{{ $product->name }}</h2>
                                                     </a>
-                           
-                                                        <span>Rs : {{ $product->price }}</span>
+
+                                                    <span>Rs : {{ $product->price }}</span>
 
                                                     <div class="light-line"></div>
 
@@ -88,9 +88,10 @@
 
                                                         <ul>
 
-                                                            <li class="add-to-cart-btn" data-product-id="{{ $product->id }}">
+                                                            <li class="add-to-cart-btn"
+                                                                data-product-id="{{ $product->id }}">
                                                                 <i class="fa fa-shopping-cart"></i>
-                                                              Add to cart
+                                                                Add to cart
                                                             </li>
 
                                                         </ul>
@@ -134,7 +135,8 @@
                                                     @else
                                                         <li>
 
-                                                            <a href="{{ $data['products']->url($i) }}">{{ $i }}</a>
+                                                            <a
+                                                                href="{{ $data['products']->url($i) }}">{{ $i }}</a>
 
                                                         </li>
                                                     @endif
@@ -178,9 +180,10 @@
 
                                     <form method="GET" action="" class="search-form">
 
-                                         <div class="">
+                                        <div class="">
 
-                                            <input  class="form-control" placeholder="Search" name="search" style="margin-bottom: 10px" type="text"  >
+                                            <input class="form-control" placeholder="Search" name="search"
+                                                style="margin-bottom: 10px" type="text">
 
                                         </div>
 
@@ -213,5 +216,11 @@
         @include('Frontend.layouts.mobile-nav')
 
     </div>
+
+    @if (Session::has('success'))
+        <script>
+            alertify.success("{{ Session::get('success') }}");
+        </script>
+    @endif
 
 @endsection

@@ -59,33 +59,38 @@
                                     <tbody>
                                         <!-- Loop through the cart items -->
                                         @isset($data['cart']['items'])
-                                            
-                                        @forelse ($data['cart']['items'] as $item)
-                                        <tr>
-                                            <td>
-                                                <div class="product-thumbnail">
-                                                    <img width="100px" height="100px" style="object-fit: contain" src="{{ asset('upload/' . $item['image']) }}" alt="{{ $item['name'] }}" />
-                                                </div>
-                                                <div class="product-name">{{ $item['name'] }}</div>
-                                            </td>
-                                            <td>{{ $item['price'] }}</td>
-                                            <td>{{ $item['quantity'] }}</td>
-                                            <td>{{ $item['total_price'] }}</td>
-                                        </tr>
-                                        @empty
-                                            Cart is empty
-                                        @endforelse 
-                                
+                                            @forelse ($data['cart']['items'] as $item)
+                                                <tr>
+                                                    <td>
+                                                        <div class="product-thumbnail">
+                                                            <img width="100px" height="100px" style="object-fit: contain" src="{{ asset('upload/' . $item['image']) }}" alt="{{ $item['name'] }}" />
+                                                        </div>
+                                                        <div class="product-name">{{ $item['name'] }}</div>
+                                                    </td>
+                                                    <td>{{ $item['price'] }}</td>
+                                                    <td>{{ $item['quantity'] }}</td>
+                                                    <td>{{ $item['total_price'] }}</td>
+                                                    <td>
+                                                        <a href="" data-product-id="{{ $item['id'] }}" class="remove-from-cart">
+                                                            <i class="fa fa-times"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            @empty
+                                                <tr>
+                                                    <td colspan="5">Cart is empty</td>
+                                                </tr>
+                                            @endforelse 
                                         @endisset
-            
                                     </tbody>
+                                    
                                 </table>
                                 <div class="cart-total">
                                     @isset($data['cart'])
-                                    <h3>Total: {{ $data['cart']['total_price'] }}</h3>
+                                    <h3>Total: RS {{ $data['cart']['total_price'] }}</h3>
                                     @endisset
                                 
-                                    <a href="" class="btn btn-primary">Proceed to Checkout</a>
+                                    <a href="{{ route('checkout.front') }}" class="btn btn-primary">Proceed to Checkout</a>
                                 </div>
                             </div>
                         </div>
