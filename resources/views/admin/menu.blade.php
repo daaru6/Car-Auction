@@ -91,6 +91,12 @@
                         <span data-key="t-users">Car Brands</span>
                     </a>
                 </li>
+                <li class="">
+                    <a href="{{route('admin.order.all')}}" class="">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span data-key="t-users">Orders</span>
+                    </a>
+                </li>
                 
                 
 

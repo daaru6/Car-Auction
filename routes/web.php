@@ -114,6 +114,15 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
 
             Route::get('/delete-brand', [CarController::class, "delete_brand"])->name('admin.car.brand.del')->where('id', '[0-9]+');
         });
+
+        Route::prefix("/orders")->group(function () {
+
+            Route::get('/all', [AdminController::class, "orders"])->name('admin.order.all');
+            Route::get('/detail', [AdminController::class, "order_detail"])->name('admin.order.detail');
+
+            Route::get('/update-order-status', [AdminController::class, "update_order_status"])->name('admin.order.status');
+
+        });
     });
 });
 

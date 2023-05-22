@@ -5,6 +5,8 @@ use App\Models\User;
 use App\Models\CarBrands;
 use App\Models\CarCategory;
 use App\Models\UserRegistrationAmount;
+use App\Models\Order;
+use App\Models\OrderItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -85,4 +87,36 @@ class AdminController extends Controller
         $user->save();
         return redirect()->back()->with("success", "User Status Updated Successfully!");
     }
+
+    public function orders(Request $request){
+
+        $title = "All Orders";
+
+        $orders = Order::with('orderItems','user')->latest()->get();
+
+        return view('admin.orders.all', compact('title', 'orders'));
+    }
+
+    public function order_detail(Request $request){
+        $title = "View Order";
+        $order = Order::with('orderItems','user','orderItems.product')->findOrFail($request->id);
+        return view('admin.orders.detail', compact('title', 'order'));
+    }
+
+    public function update_order_status(Request $request)
+    {
+        $validated_data = $request->validate([
+            'id' => 'required|exists:orders,id',
+            'status' => 'required|in:Pending,Completed',
+        ]);
+    
+        $status = $validated_data['status'] === 'Pending' ? 'Completed' : 'Pending';
+    
+        Order::where('id', $validated_data['id'])
+            ->update(['status' => $status]);
+    
+        return redirect()->back()->with('success', 'Status Updated!');
+    }
+
+    
 }

@@ -227,7 +227,7 @@ class FrontendController extends Controller
             if ($charge) {
 
                 DB::beginTransaction();
-
+                // Create the order...
                 $order =  Order::create([
                     'total_amount' => $data['cart']['total_price'],
                     'user_id' => isset($user->name) ? $user->name : null,
@@ -238,7 +238,7 @@ class FrontendController extends Controller
                 ]);
 
                 foreach ($data['cart']['items'] as $item) {
-
+                // Create order items...
                     OrderItem::create([
                         'order_id' => $order->id,
                         'product_id' => $item['id'],
@@ -247,6 +247,9 @@ class FrontendController extends Controller
                     ]);
                 }
                 DB::commit();
+
+                // Empty the cart
+                session()->forget('cart');
 
                 return redirect()->to(route('shop.front'))->with('success', "Thank you for you order!");
             }
