@@ -186,7 +186,7 @@ class FrontendController extends Controller
 
         $data['page_title'] = "Auction - Product";
 
-        $data['product'] = Product::findOrFail($request->id);
+        $data['product'] = Product::with('reviews')->findOrFail($request->id);
 
         return view("Frontend.pages.product-detail")->with('data', $data);
     }

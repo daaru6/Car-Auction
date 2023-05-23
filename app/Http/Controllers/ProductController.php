@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Lib\Generic;
 use App\Models\Product;
+use App\Models\ProductReview;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
@@ -91,5 +92,34 @@ class ProductController extends Controller
 
         return redirect()->route('admin.product.index')
             ->with('success', 'Product deleted successfully');
+    }
+
+    public function add_review(Request $request, $product_id)
+    {
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'required|string|max:255',
+        ]);
+
+        $product = Product::findOrFail($product_id);
+
+        $reviewData = [
+            'product_id' => $product->id,
+            'rating' => $request->rating,
+            'comment' => $request->comment,
+        ];
+
+        if (auth()->check()) {
+            // User is logged in, associate the review with the user
+            $reviewData['user_id'] = auth()->user()->id;
+        } else {
+            // User is a guest, store guest name and email
+            $reviewData['guest_name'] = $request->name;
+            $reviewData['guest_email'] = $request->email;
+        }
+
+        $review = ProductReview::create($reviewData);
+
+        return redirect()->back()->with('success', 'Review added successfully.');
     }
 }

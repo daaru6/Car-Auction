@@ -49,6 +49,8 @@ Route::get('/product/add-to-cart', [FrontendController::class, "add_to_cart"])->
 
 Route::get('/product/remove-from-cart', [FrontendController::class, "remove_from_cart"])->name("remove_from_cart.front");
 
+Route::post('/product/{productId}/review', [ProductController::class, 'add_review'])->name('product.add_review.front');
+
 Route::get('/cart', [FrontendController::class, "cart"])->name("cart.front");
 
 Route::match(['GET', 'POST'], '/checkout', [FrontendController::class, "checkout"])->name("checkout.front");
