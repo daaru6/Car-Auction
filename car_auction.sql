@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 20, 2023 at 03:05 PM
+-- Generation Time: May 31, 2023 at 10:34 PM
 -- Server version: 10.4.27-MariaDB
 -- PHP Version: 8.2.0
 
@@ -237,7 +237,60 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (8, '2023_03_16_181122_create_car_categories', 4),
 (10, '2023_03_20_102618_create_car_brands', 5),
 (11, '2023_04_16_213711_create_user_registration_payments_table', 6),
-(12, '2023_04_18_180500_create_car_comments_table', 7);
+(12, '2023_04_18_180500_create_car_comments_table', 7),
+(13, '2023_04_27_192316_create_products_table', 8),
+(14, '2023_05_21_203825_create_orders_table', 9),
+(15, '2023_05_21_204018_create_order_items_table', 10),
+(16, '2023_05_23_095506_create_product_reviews_table', 11);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `orders`
+--
+
+CREATE TABLE `orders` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `name` text DEFAULT NULL,
+  `email` text DEFAULT NULL,
+  `address` text DEFAULT NULL,
+  `total_amount` decimal(8,2) NOT NULL,
+  `status` varchar(255) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` (`id`, `user_id`, `name`, `email`, `address`, `total_amount`, `status`, `created_at`, `updated_at`) VALUES
+(2, NULL, 'Suleman Dar', 'dar7suleman@gmail.com', 'House no. 110 Marghzar colony lahore', '2400.00', 'Completed', '2023-05-21 16:47:31', '2023-05-23 03:45:08');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `order_items`
+--
+
+CREATE TABLE `order_items` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `order_id` bigint(20) UNSIGNED NOT NULL,
+  `product_id` bigint(20) UNSIGNED NOT NULL,
+  `quantity` int(11) NOT NULL,
+  `price` decimal(8,2) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `order_items`
+--
+
+INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `quantity`, `price`, `created_at`, `updated_at`) VALUES
+(1, 2, 2, 3, '300.00', '2023-05-21 16:47:31', '2023-05-21 16:47:31'),
+(2, 2, 3, 3, '500.00', '2023-05-21 16:47:31', '2023-05-21 16:47:31');
 
 -- --------------------------------------------------------
 
@@ -272,6 +325,59 @@ CREATE TABLE `personal_access_tokens` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `products`
+--
+
+CREATE TABLE `products` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `slug` text DEFAULT NULL,
+  `description` text DEFAULT NULL,
+  `price` decimal(8,2) NOT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `products`
+--
+
+INSERT INTO `products` (`id`, `name`, `slug`, `description`, `price`, `image`, `created_at`, `updated_at`) VALUES
+(1, 'Test Product', 'test-product', 'Test Description', '200.00', '1684616645311.png', '2023-05-20 16:04:05', '2023-05-20 16:53:18'),
+(2, 'Test Product 2', 'test-product-2', 'Test Description', '300.00', '1684618265670.png', '2023-05-20 16:31:05', '2023-05-20 16:53:27'),
+(3, 'Test Product 3', 'test-product-3', 'Test Description', '500.00', '1684618302695.png', '2023-05-20 16:31:42', '2023-05-20 16:53:36');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `product_reviews`
+--
+
+CREATE TABLE `product_reviews` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `product_id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `guest_name` varchar(255) DEFAULT NULL,
+  `guest_email` varchar(255) DEFAULT NULL,
+  `rating` int(11) NOT NULL,
+  `comment` text NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `product_reviews`
+--
+
+INSERT INTO `product_reviews` (`id`, `product_id`, `user_id`, `guest_name`, `guest_email`, `rating`, `comment`, `created_at`, `updated_at`) VALUES
+(1, 1, NULL, 'Test', 'Test@gmail.com', 4, 'Test', '2023-05-23 05:08:34', '2023-05-23 05:08:34'),
+(2, 1, 3, NULL, NULL, 5, 'Test', '2023-05-23 05:26:12', '2023-05-23 05:26:12'),
+(3, 3, NULL, 'Dar', 'dar7suleman@gmail.com', 3, 'Test', '2023-05-23 09:26:14', '2023-05-23 09:26:14');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
@@ -294,8 +400,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `role`, `is_active`, `is_initial_paid`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-(1, 'Admin', 'admin@auction.com', '2023-03-15 00:41:03', 'Admin', 1, 1, '$2y$10$tqBU0qDBo5oFtgICOTJrUeK8BYvNnWI37NZlTx6U0T8BJUelovRvO', 'fBv1An2R4Jjt3EWEK9ETafUv7oAYpMyO07sNEI9PcdbMdO6OUhnPkSRWukkv', '2023-03-15 00:41:04', '2023-03-15 00:41:04'),
-(2, 'Kirk Luettgen', 'user@auction.com', '2023-03-15 00:51:35', 'User', 1, 0, '$2y$10$tqBU0qDBo5oFtgICOTJrUeK8BYvNnWI37NZlTx6U0T8BJUelovRvO', 'P4Vcm4AaAS9QHnVJEMcxnkG9wSIHFj9GX9mHJJQFpiTY8zSh7QFJJTUVgJ6N', '2023-03-15 00:51:36', '2023-04-16 14:42:28'),
+(1, 'Admin', 'admin@auction.com', '2023-03-15 00:41:03', 'Admin', 1, 1, '$2y$10$tqBU0qDBo5oFtgICOTJrUeK8BYvNnWI37NZlTx6U0T8BJUelovRvO', '6DFyudkhcg7ifznI1xGymqDVEexmCfhzQ2UVVp49JChOjwqtLgno29rbSI48', '2023-03-15 00:41:04', '2023-03-15 00:41:04'),
+(2, 'Kirk Luettgen', 'user@auction.com', '2023-03-15 00:51:35', 'User', 1, 0, '$2y$10$tqBU0qDBo5oFtgICOTJrUeK8BYvNnWI37NZlTx6U0T8BJUelovRvO', 'dVwbJ8i473Yprrq3GTLJFlbOlpuXsNZzT6lqSl6hRcygvmtN1JofW0xhMvwg', '2023-03-15 00:51:36', '2023-04-16 14:42:28'),
 (3, 'user2', 'user2@auction.com', NULL, 'User', 1, 0, '$2y$10$nQPqbMXl.sPoX0PSkQHOdeGva1OpFsAC2oImkX8Tez9nrVStMgA5e', NULL, '2023-03-27 16:16:53', '2023-04-16 14:22:37'),
 (4, 'user3', 'user3@auction.com', NULL, 'User', 1, 0, '$2y$10$.voKCb0vk8fDItZhk4/0JesDgbryzAd7todNc8TKQg9/J8aHkbtBO', NULL, '2023-03-30 13:58:28', '2023-03-30 13:58:28'),
 (5, 'user4', 'user4@auction.com', NULL, 'User', 1, 0, '$2y$10$PhXvJxhsIoiJWdtAUw1o0ufoM1qic.C9/9HVMnrD25hlSVcILAKpe', NULL, '2023-03-31 01:58:28', '2023-03-31 01:58:28'),
@@ -401,6 +507,21 @@ ALTER TABLE `migrations`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `orders`
+--
+ALTER TABLE `orders`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `orders_user_id_foreign` (`user_id`);
+
+--
+-- Indexes for table `order_items`
+--
+ALTER TABLE `order_items`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `order_items_order_id_foreign` (`order_id`),
+  ADD KEY `order_items_product_id_foreign` (`product_id`);
+
+--
 -- Indexes for table `password_resets`
 --
 ALTER TABLE `password_resets`
@@ -413,6 +534,20 @@ ALTER TABLE `personal_access_tokens`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `personal_access_tokens_token_unique` (`token`),
   ADD KEY `personal_access_tokens_tokenable_type_tokenable_id_index` (`tokenable_type`,`tokenable_id`);
+
+--
+-- Indexes for table `products`
+--
+ALTER TABLE `products`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `product_reviews`
+--
+ALTER TABLE `product_reviews`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `product_reviews_product_id_foreign` (`product_id`),
+  ADD KEY `product_reviews_user_id_foreign` (`user_id`);
 
 --
 -- Indexes for table `users`
@@ -484,13 +619,37 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT for table `orders`
+--
+ALTER TABLE `orders`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `order_items`
+--
+ALTER TABLE `order_items`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `products`
+--
+ALTER TABLE `products`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `product_reviews`
+--
+ALTER TABLE `product_reviews`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `users`
@@ -526,6 +685,26 @@ ALTER TABLE `car_comments`
 --
 ALTER TABLE `car_galleries`
   ADD CONSTRAINT `car_galleries_car_id_foreign` FOREIGN KEY (`car_id`) REFERENCES `cars` (`car_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `orders`
+--
+ALTER TABLE `orders`
+  ADD CONSTRAINT `orders_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `order_items`
+--
+ALTER TABLE `order_items`
+  ADD CONSTRAINT `order_items_order_id_foreign` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `order_items_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `product_reviews`
+--
+ALTER TABLE `product_reviews`
+  ADD CONSTRAINT `product_reviews_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `product_reviews_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `user_registration_payments`

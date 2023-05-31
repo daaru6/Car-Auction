@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -15,12 +16,7 @@ class AuthController extends Controller
             'email' => 'required|max:255|email:filter',
             'password' => 'required',
         ]);
-        if (Auth::attempt(
-            [
-                'email' => $request->email,
-                'password' => $request->password
-            ]
-        )) {
+        if (Auth::attempt(['email' => $request->email,'password' => $request->password])) {
             if (auth()->user()->role == "Admin") {
                 return redirect()->route('admin.dashboard');
             } else {
